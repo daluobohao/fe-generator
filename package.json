@@ -1,0 +1,28 @@
+{
+  "name": "telecom-fe-generator",
+  "version": "0.1.0",
+  "description": "project generator of telecom fe group",
+  "main": "bin/project-cli.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "express",
+    "webpack"
+  ],
+  "author": "telecom-fe",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "2.9.0",
+    "ejs": "2.5.6",
+    "mkdirp": "0.5.1",
+    "sorted-object": "2.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.9.0"
+  }
+}

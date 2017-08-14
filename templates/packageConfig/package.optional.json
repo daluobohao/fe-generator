@@ -1,0 +1,22 @@
+{
+  "react": {
+    "dependencies": {
+      "prop-types": "^15.5.10",
+      "react": "^15.6.1",
+      "react-dom": "^15.6.1"
+    },
+    "devDependencies": {
+      "babel-preset-react": "^6.24.1"
+    }
+  },
+  "superagent": {
+    "superagent": "^3.5.2"
+  },
+  "lint": {
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.9.0"
+  }
+}

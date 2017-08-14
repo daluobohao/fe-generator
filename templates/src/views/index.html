@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+  <link rel='shortcut icon' href='//s01.mifile.cn/favicon.ico' type="image/x-icon">
+  <title>test</title>
+  <script>
+    ;(function (doc, win) {
+        var docEl = doc.documentElement,     // html Dom
+            resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',      // only ios has orientationchange event, other browser only has window.resize
+            recalc = function () {
+                var clientWidth = docEl.clientWidth;
+                if (!clientWidth) return;
+                if(clientWidth>=720){
+                    docEl.style.fontSize = '100px';
+                }else{
+                    docEl.style.fontSize = 100 * (clientWidth / 720) + 'px';
+                }
+            };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+      })(document, window);
+  </script>
+</head>
+
+<body>
+  <div id="root">
+    <h1>hello word</h1>
+    <input id="btn" type="button" value="ajax请求" />
+  </div>
+</body>
+
+</html>
