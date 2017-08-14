@@ -6,6 +6,9 @@
     "url": "git@git.n.xiaomi.com:xiaomi-telecom-fe/telecom-fe-generator.git"
   },
   "description": "project generator of telecom fe group",
+  "bin": {
+    "telecom-fe-generator": "bin/project-cli.js"
+  },
   "main": "bin/project-cli.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
