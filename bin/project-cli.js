@@ -295,11 +295,11 @@ function createApplication(name, filePath) {
         basePkg.dependencies[key] = option[key];
       });
     }
-    if (!program.noGit) {
+    if (program.git) {
       copyTemplate('gitignore', `${filePath}/.gitignore`);
       copyTemplate('README', `${filePath}/README.md`);
     }
-    if (!program.noLint) {
+    if (program.lint) {
       const option = optionalPkg.lint;
       Object.keys(option).forEach((key) => {
         basePkg.devDependencies[key] = option[key];
