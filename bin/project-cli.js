@@ -17,7 +17,7 @@ const optionalPkg = require('../templates/packageConfig/package.optional.json');
 
 const version = pkg.version;
 
-/* eslint no-console: 0, no-underscore-dangle: 0 */
+/* eslint no-console: 0, no-underscore-dangle: 0, prefer-rest-params: 0 */
 
 /**
  * Install an around function; AOP.
@@ -25,11 +25,12 @@ const version = pkg.version;
 
 const around = (obj, method, fn) => {
   const old = obj[method];
-  return () => {
+  function newFunc() {
     const args = new Array(arguments.length);
     for (let i = 0; i < args.length; i += 1) args[i] = arguments[i];
     return fn.call(this, old, args);
-  };
+  }
+  return newFunc;
 };
 
 /**
@@ -38,10 +39,11 @@ const around = (obj, method, fn) => {
 
 const before = (obj, method, fn) => {
   const old = obj[method];
-  return () => {
+  function newFunc() {
     fn.call(this);
     old.apply(this, arguments);
-  };
+  }
+  return newFunc;
 };
 
 const oldExit = process.exit;
@@ -77,18 +79,18 @@ process.exit = exit;
 
 // CLI
 
-program.optionMissingArgument = around(program, 'optionMissingArgument', (fn, args) => {
+program.optionMissingArgument = around(program, 'optionMissingArgument', function (fn, args) {
   program.outputHelp();
   fn.apply(this, args);
   return { args: [], unknown: [] };
 });
 
-program.outputHelp = before(program, 'outputHelp', () => {
+program.outputHelp = before(program, 'outputHelp', function () {
   // track if help was shown for unknown option
   this._helpShown = true;
 });
 
-program.unknownOption = before(program, 'unknownOption', () => {
+program.unknownOption = before(program, 'unknownOption', function () {
   // allow unknown options if help was shown, to prevent trailing error
   this._allowUnknownOption = this._helpShown;
 
@@ -106,7 +108,7 @@ program
   .option('    --no-lint', 'add .eslintrc')
   .option('-f, --force', 'force on non-empty directory')
   .option('-F, --framework <framework>', 'add framework to project support (react) (defaults to pure js)')
-  .option('-a, --ajax <ajax>', 'add ajax client to project support (superagent) (defaults to superagent)')
+  .option('-a, --ajax <ajax>', 'add ajax client to project support (superagent) (defaults to pure ajax)')
   .parse(process.argv);
 
 /**
@@ -205,7 +207,7 @@ function loadTemplate(name) {
  */
 
 function createApplication(name, filePath) {
-  let wait = 9;
+  let wait = 15;
 
   console.log();
   function complete() {
