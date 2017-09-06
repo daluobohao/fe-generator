@@ -103,12 +103,13 @@ program.unknownOption = before(program, 'unknownOption', function () {
 program
   .version(version, '    --version')
   .usage('[options] [dir]')
-  .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
-  .option('    --no-git', 'add .gitignore')
-  .option('    --no-lint', 'add .eslintrc')
-  .option('-f, --force', 'force on non-empty directory')
+  .option('-h, --host <host>', 'online host')
   .option('-F, --framework <framework>', 'add framework to project support (react) (defaults to pure js)')
-  .option('-a, --ajax <ajax>', 'add ajax client to project support (superagent) (defaults to pure ajax)')
+  .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
+  .option('-f, --force', 'force on non-empty directory')
+  .option('    --no-ajax', 'no lib of ajax')
+  .option('    --no-git', 'no .gitignore')
+  .option('    --no-lint', 'no .eslintrc')
   .parse(process.argv);
 
 /**
@@ -206,8 +207,8 @@ function loadTemplate(name) {
  * @param {String} path
  */
 
-function createApplication(name, filePath) {
-  let wait = 15;
+function createApplication(name, filePath, params) {
+  let wait = 16;
 
   console.log();
   function complete() {
@@ -231,6 +232,7 @@ function createApplication(name, filePath) {
     mkdir(`${filePath}/server`, () => {
       copyTemplate('server/api-router.js', `${filePath}/server/api-router.js`);
       copyTemplate('server/api-server.js', `${filePath}/server/api-server.js`);
+      copyTemplate('server/proxy-server.js', `${filePath}/server/proxy-server.js`);
       copyTemplate('server/static-server.js', `${filePath}/server/static-server.js`);
       complete();
     });
@@ -280,8 +282,9 @@ function createApplication(name, filePath) {
     write(`${filePath}/webpack.config.js`, config.render());
 
     // generate package.json
-    if (program.framework) {
-      const option = optionalPkg[program.framework];
+    if (program.framework || params.framework) {
+      const framework = program.framework || params.framework;
+      const option = optionalPkg[framework] || { dependencies: {}, devDependencies: {} };
       Object.keys(option.dependencies).forEach((key) => {
         basePkg.dependencies[key] = option.dependencies[key];
       });
@@ -289,8 +292,9 @@ function createApplication(name, filePath) {
         basePkg.devDependencies[key] = option.devDependencies[key];
       });
     }
+    basePkg.host = program.host || program.host || '';
     if (program.ajax) {
-      const option = optionalPkg[program.ajax];
+      const option = optionalPkg.ajax || { dependencies: {} };
       Object.keys(option).forEach((key) => {
         basePkg.dependencies[key] = option[key];
       });
@@ -378,31 +382,97 @@ function emptyDirectory(filePath, fn) {
 }
 
 /**
+ * Check param
+ * @return {Object} tips
+ */
+const checkParams = (destinationPath) => {
+  const allTips = {
+    path: 'path of project [default: current dir] ',
+    host: 'online host [default: ""] ',
+    framework: 'framework [default: pure js] ',
+    css: 'css engine [default: pure css] ',
+  };
+  const tips = {};
+  const params = {};
+  Object.keys(allTips).forEach((key) => {
+    params[key] = program[key];
+  });
+  params.path = destinationPath;
+  Object.keys(allTips).forEach((key) => {
+    if (!params[key]) {
+      tips[key] = allTips[key];
+    }
+  });
+  return tips;
+};
+
+/**
+ * get input from STDOUT/STDIN
+ */
+
+function getAbsenceParams(destinationPath, callback) {
+  const tips = checkParams(destinationPath);
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  const keys = Object.keys(tips);
+  const params = {};
+  const getInput = (name, value) => {
+    if (value && value.length > 0) {
+      params[name] = value;
+    }
+    if (keys.length === 0) {
+      rl.close();
+      callback(params);
+      return;
+    }
+    const key = keys.shift();
+    rl.question(tips[key], (input) => {
+      getInput(key, input);
+    });
+  };
+  if (keys.length === 0) {
+    callback(params);
+    return;
+  }
+  const key = keys.shift();
+  rl.question(tips[key], (input) => {
+    getInput(key, input);
+  });
+}
+
+/**
  * Main program.
  */
 
 function main() {
   // Path
-  const destinationPath = program.args.shift() || '.';
+  const destinationPath = program.args.shift();
 
   // App name
-  const appName = createAppName(path.resolve(destinationPath)) || 'hello-world';
+  // const appName = createAppName(path.resolve(destinationPath));
 
   // Generate application
-  emptyDirectory(destinationPath, (empty) => {
-    if (empty || program.force) {
-      createApplication(appName, destinationPath);
-    } else {
-      confirm('destination is not empty, continue? [y/N] ', (ok) => {
-        if (ok) {
-          process.stdin.destroy();
-          createApplication(appName, destinationPath);
-        } else {
-          console.error('aborting');
-          exit(1);
-        }
-      });
-    }
+  getAbsenceParams(destinationPath, (params) => {
+    const realPath = params.path || '.';
+    const appName = createAppName(path.resolve(realPath));
+    emptyDirectory(realPath, (empty) => {
+      if (empty || program.force) {
+        process.stdin.destroy();
+        createApplication(appName, realPath, params);
+      } else {
+        confirm('destination is not empty, continue? [y/N] ', (ok) => {
+          if (ok) {
+            process.stdin.destroy();
+            createApplication(appName, realPath, params);
+          } else {
+            console.error('aborting');
+            exit(1);
+          }
+        });
+      }
+    });
   });
 }
 

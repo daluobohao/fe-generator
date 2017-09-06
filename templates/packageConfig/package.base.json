@@ -31,9 +31,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --progress --profile --colors",
-    "start-api-server": "nodemon ./server/api-server.js",
-    "start-dev-server": "node ./server/static-server.js",
-    "dev": "concurrently \"node ./server/static-server.js\" \"nodemon ./server/api-server.js\" -k"
+    "start-api-server": "nodemon -w server --ignore server/static-server.js ./server/api-server.js",
+    "start-dev-server": "nodemon -w server/static-server.js -w package.json -w webpack.config.common.js -w webpack.config.dev.js ./server/static-server.js",
+    "web": "concurrently \"npm run start-dev-server\" \"npm run start-api-server\" -k",
+    "proxy": "anyProxy --intercept -p 8001 -w 8002 -s -r ./server/proxy-server.js",
+    "dev": "concurrently \"npm run start-dev-server\" \"npm run start-api-server\" \"npm run proxy\" -k"
   },
   "port": {
     "dev": 8080,

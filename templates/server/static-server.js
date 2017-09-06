@@ -9,12 +9,9 @@ const pkg = require('../package.json');
 
 const compiler = webpack(webpackConfig);
 const apiServer = `http://localhost:${pkg.port.api}`;
-// const apiServer = 'https://web.softsim.10046.mi.com/';
 const filter = (pathname, req) => req.headers.accept.indexOf('html') === -1;
-const apiProxy = proxy(filter, { target: apiServer, changeOrigin: true });
+const apiProxy = proxy(filter, { target: apiServer });
 const app = express();
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
 const devMiddlewareInstance = devMiddleware(compiler, {
   noInfo: true,
   // quiet: true,
@@ -26,7 +23,8 @@ const devMiddlewareInstance = devMiddleware(compiler, {
 app.use(devMiddlewareInstance);
 app.use(hotMiddleware(compiler));
 app.use('/', apiProxy);
-
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.get('/:name', (req, res) => {
   const htmlBuffer = devMiddlewareInstance.fileSystem.readFileSync(`${webpackConfig.output.path}/${req.params.name}.html`);
   res.cookie('userId', 123123);

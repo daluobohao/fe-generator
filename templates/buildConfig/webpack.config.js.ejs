@@ -4,6 +4,13 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const config = require('./webpack.config.common.js');
 
+const promisePath = 'core-js/fn/promise';
+const fetchPath = 'whatwg-fetch';
+
+Object.keys(config.entry).forEach((key) => {
+  config.entry[key] = [promisePath, fetchPath].concat(config.entry[key]);
+});
+
 config.output.publicPath = '/';
 
 config.plugins = [

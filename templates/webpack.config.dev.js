@@ -4,10 +4,11 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const config = require('./webpack.config.common.js');
 
 const promisePath = 'core-js/fn/promise';
+const fetchPath = 'whatwg-fetch';
 const webpackHotClient = 'webpack-hot-middleware/client?reload=true&quiet=true';
 
 Object.keys(config.entry).forEach((key) => {
-  config.entry[key] = [promisePath, webpackHotClient].concat(config.entry[key]);
+  config.entry[key] = [promisePath, fetchPath, webpackHotClient].concat(config.entry[key]);
 });
 
 config.devtool = 'source-map';

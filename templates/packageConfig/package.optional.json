@@ -9,8 +9,8 @@
       "babel-preset-react": "^6.24.1"
     }
   },
-  "superagent": {
-    "superagent": "^3.5.2"
+  "ajax": {
+    "whatwg-fetch": "^2.0.3"
   },
   "lint": {
     "eslint": "^3.19.0",
