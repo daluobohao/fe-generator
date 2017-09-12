@@ -21,4 +21,8 @@ router.post('/upload', (req, res) => {
   });
 });
 
+router.post('/pay', (req, res) => {
+  res.redirect('localhost:8080/pay');
+});
+
 module.exports = router;

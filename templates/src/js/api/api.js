@@ -13,7 +13,13 @@ export const fetchWithErrorHandle = errorHandler => (url, option, timeout = TIME
   .then((response) => {
     const { status } = response;
     if (status >= 200 && status <= 300) {
+      if (response.redirected) {
+        return response;
+      }
       return response.json();
+    }
+    if (response.redirected) {
+      return response;
     }
     const err = new Error('服务器错误，请稍后重试');
     err.name = 'fail';
@@ -91,9 +97,30 @@ export const teleFetch = url => ({
   },
 });
 
+export const postAndJump = (url, params) => {
+  const form = document.createElement('form');
+  Object.keys(params).forEach((key) => {
+    const input = document.createElement('input');
+    input.name = key;
+    input.value = params[key];
+    form.appendChild(input);
+  });
+  form.id = `${(Math.random() * 100) + 1}_form`;
+  form.style.display = 'none';
+  form.action = url;
+  form.method = 'post';
+  const body = document.body || document.querySelector('body');
+  body.appendChild(form);
+  form.submit();
+};
+
+// 业务相关api请求
+
 // post
 export const testPost = params => teleFetch('test').post(params);
 // get
 export const testGet = params => teleFetch('test').get(params);
 // post file
 export const testFileUpload = params => teleFetch('upload').type('file').post(params);
+// post and jump
+export const testPostAndJump = params => postAndJump('pay', params);

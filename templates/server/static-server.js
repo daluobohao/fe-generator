@@ -22,14 +22,25 @@ const devMiddlewareInstance = devMiddleware(compiler, {
 });
 app.use(devMiddlewareInstance);
 app.use(hotMiddleware(compiler));
+app.get('/pay', (req, res) => {
+  const htmlBuffer = devMiddlewareInstance.fileSystem.readFileSync(`${webpackConfig.output.path}/index.html`);
+  res.cookie('userId', 123123);
+  res.send(htmlBuffer.toString());
+});
+app.post('/pay', (req, res) => {
+  res.redirect('https://m.baidu.com/?from=844b&vit=fps');
+});
 app.use('/', apiProxy);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
 app.get('/:name', (req, res) => {
+  console.log(req.params.name);
   const htmlBuffer = devMiddlewareInstance.fileSystem.readFileSync(`${webpackConfig.output.path}/${req.params.name}.html`);
   res.cookie('userId', 123123);
   res.send(htmlBuffer.toString());
 });
+
 
 app.listen(pkg.port.dev, (error) => {
   if (error) {

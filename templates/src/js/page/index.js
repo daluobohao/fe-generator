@@ -1,4 +1,4 @@
-import { testGet, testPost, testFileUpload } from '../api/api';
+import { testGet, testPost, testFileUpload, testPostAndJump, formPost } from '../api/api';
 import '../../css/index.css';
 import '../../img/test.png';
 
@@ -33,4 +33,10 @@ document.querySelector('#btn3').addEventListener('change', (e) => {
     console.log(res);
   })
     .catch(errorHanlder);
+});
+
+document.querySelector('#btn4').addEventListener('click', () => {
+  testPostAndJump({
+    id: 61,
+  });
 });
