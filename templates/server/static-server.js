@@ -22,6 +22,13 @@ const devMiddlewareInstance = devMiddleware(compiler, {
 });
 app.use(devMiddlewareInstance);
 app.use(hotMiddleware(compiler));
+app.use((req, res, next) => {
+  if (['localhost', '127.0.0.1'].indexOf(req.hostname) !== -1) {
+    res.cookie('userId', 123);
+    res.cookie('serviceToken', 'token');
+  }
+  next();
+});
 app.get('/pay', (req, res) => {
   const htmlBuffer = devMiddlewareInstance.fileSystem.readFileSync(`${webpackConfig.output.path}/index.html`);
   res.cookie('userId', 123123);

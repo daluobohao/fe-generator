@@ -103,7 +103,8 @@ program.unknownOption = before(program, 'unknownOption', function () {
 program
   .version(version, '    --version')
   .usage('[options] [dir]')
-  .option('-h, --host <host>', 'online host')
+  .option('-p, --preview <host>', 'preview host')
+  .option('-o, --online <host>', 'online host')
   .option('-F, --framework <framework>', 'add framework to project support (react) (defaults to pure js)')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('-f, --force', 'force on non-empty directory')
@@ -292,7 +293,10 @@ function createApplication(name, filePath, params) {
         basePkg.devDependencies[key] = option.devDependencies[key];
       });
     }
-    basePkg.host = program.host || program.host || '';
+    basePkg.host = {
+      preview: program.preview || params.preview || '',
+      online: program.online || params.online || '',
+    };
     if (program.ajax) {
       const option = optionalPkg.ajax || { dependencies: {} };
       Object.keys(option).forEach((key) => {
@@ -388,7 +392,8 @@ function emptyDirectory(filePath, fn) {
 const checkParams = (destinationPath) => {
   const allTips = {
     path: 'path of project [default: current dir] ',
-    host: 'online host [default: ""] ',
+    preview: 'preview host(no protocol) [default: ""] ',
+    online: 'online host(no protocol) [default: ""]',
     framework: 'framework [default: pure js] ',
     css: 'css engine [default: pure css] ',
   };
