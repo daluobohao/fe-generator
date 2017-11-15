@@ -235,6 +235,9 @@ function createApplication(name, filePath, params) {
       copyTemplate('server/api-server.js', `${filePath}/server/api-server.js`);
       copyTemplate('server/proxy-server.js', `${filePath}/server/proxy-server.js`);
       copyTemplate('server/static-server.js', `${filePath}/server/static-server.js`);
+      copyTemplate('server/.rnd', `${filePath}/server/.rnd`);
+      copyTemplate('server/cert.pem', `${filePath}/server/cert.pem`);
+      copyTemplate('server/key.pem', `${filePath}/server/key.pem`);
       complete();
     });
 
@@ -391,11 +394,11 @@ function emptyDirectory(filePath, fn) {
  */
 const checkParams = (destinationPath) => {
   const allTips = {
-    path: 'path of project [default: current dir] ',
-    preview: 'preview host(no protocol) [default: ""] ',
-    online: 'online host(no protocol) [default: ""]',
-    framework: 'framework [default: pure js] ',
-    css: 'css engine [default: pure css] ',
+    path: '输入项目名称（支持路径，默认当目录）[hello-word] \n name of project (path supproted) [hello-word] ',
+    preview: '预上线环境的域名（不包括协议http或https）\npreview host(no protocol) [default: ""] ',
+    online: '线上环境的域名（不包括协议http或https）\nonline host(no protocol) [default: ""]',
+    framework: '项目使用框架（目前支持react）\nframework（react supported） [default: pure js] ',
+    css: 'css预处理器（目前暂无支持）\ncss engine [default: pure css] ',
   };
   const tips = {};
   const params = {};
@@ -460,14 +463,14 @@ function main() {
 
   // Generate application
   getAbsenceParams(destinationPath, (params) => {
-    const realPath = params.path || '.';
+    const realPath = params.path || './hello-word';
     const appName = createAppName(path.resolve(realPath));
     emptyDirectory(realPath, (empty) => {
       if (empty || program.force) {
         process.stdin.destroy();
         createApplication(appName, realPath, params);
       } else {
-        confirm('destination is not empty, continue? [y/N] ', (ok) => {
+        confirm('目标目录不为空，命令将会覆盖并合并原有内容，是否继续？\ndestination is not empty, cli will rewrite and merge destination, continue? [y/N] ', (ok) => {
           if (ok) {
             process.stdin.destroy();
             createApplication(appName, realPath, params);
