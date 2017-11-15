@@ -46,4 +46,7 @@ class onebox inherits base {
 class c3 inherits base {
 }
 
+class preview-c3 inherits base {
+}
+
 class config inherits $<env> {}
