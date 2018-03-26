@@ -1,6 +1,6 @@
 {
   "name": "@mi/telecom-fe-generator",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "repository": {
     "type": "git",
     "url": "git@git.n.xiaomi.com:xiaomi-telecom-fe/telecom-fe-generator.git"
