@@ -394,7 +394,7 @@ function emptyDirectory(filePath, fn) {
  */
 const checkParams = (destinationPath) => {
   const allTips = {
-    path: '输入项目名称（支持路径，默认当目录）[hello-word] \n name of project (path supproted) [hello-word] ',
+    path: '输入项目名称（支持路径，默认当目录）[hello-world] \n name of project (path supproted) [hello-world] ',
     preview: '预上线环境的域名（不包括协议http或https）\npreview host(no protocol) [default: ""] ',
     online: '线上环境的域名（不包括协议http或https）\nonline host(no protocol) [default: ""]',
     framework: '项目使用框架（目前支持react）\nframework（react supported） [default: pure js] ',
@@ -463,7 +463,7 @@ function main() {
 
   // Generate application
   getAbsenceParams(destinationPath, (params) => {
-    const realPath = params.path || './hello-word';
+    const realPath = params.path || './hello-world';
     const appName = createAppName(path.resolve(realPath));
     emptyDirectory(realPath, (empty) => {
       if (empty || program.force) {

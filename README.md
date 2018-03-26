@@ -8,17 +8,17 @@ $ npm install -g @mi/telecom-fe-generator
 ## Quick Start
 
 
-Create the project: 
+Create the project:
 
 ```bash
 # project name is hello-world
-$ telecom-fe-generator hello-wrod
+$ telecom-fe-generator hello-world
 ```
 
 Install dependencies:
 
 ```bash
-$ cd hello-word
+$ cd hello-world
 # the registry of mi is unnecessary
 $ npm install
 ```
