@@ -326,32 +326,9 @@ function createApplication(name, filePath, params) {
     mkdir(`${filePath}/deploy`, () => {
       mkdir(`${filePath}/deploy/manifests`, () => {
         copyTemplate('deploy/manifests/config.pp.template', `${filePath}/deploy/manifests/config.pp.template`);
-        copyTemplate('deploy/manifests/init.pp', `${filePath}/deploy/manifests/init.pp`);
-        complete();
-      });
-      mkdir(`${filePath}/deploy/templates`, () => {
-        copyTemplate('deploy/templates/clean_config.sh.erb', `${filePath}/deploy/templates/clean_config.sh.erb`);
-        copyTemplate('deploy/templates/cron.erb', `${filePath}/deploy/templates/cron.erb`);
-        copyTemplate('deploy/templates/resin.xml.erb', `${filePath}/deploy/templates/resin.xml.erb`);
         complete();
       });
       copyTemplate('deploy/find_cluster.py', `${filePath}/deploy/find_cluster.py`);
-      complete();
-    });
-    mkdir(`${filePath}/jmxmonitor`, () => {
-      mkdir(`${filePath}/jmxmonitor/bin`, () => {
-        copyTemplate('jmxmonitor/bin/jmxmonitor.py', `${filePath}/jmxmonitor/bin/jmxmonitor.py`);
-        complete();
-      });
-      mkdir(`${filePath}/jmxmonitor/conf`, () => {
-        copyTemplate('jmxmonitor/conf/collConf.ini', `${filePath}/jmxmonitor/conf/collConf.ini`);
-        copyTemplate('jmxmonitor/conf/collectConf.json', `${filePath}/jmxmonitor/conf/collectConf.json`);
-        copyTemplate('jmxmonitor/conf/counter.conf', `${filePath}/jmxmonitor/conf/counter.conf`);
-        complete();
-      });
-      copyTemplate('jmxmonitor/build.sh', `${filePath}/jmxmonitor/build.sh`);
-      copyTemplate('jmxmonitor/pom.xml', `${filePath}/jmxmonitor/pom.xml`);
-      copyTemplate('jmxmonitor/README.md', `${filePath}/jmxmonitor/README.md`);
       complete();
     });
     const buildSh = loadTemplate('build.sh');
