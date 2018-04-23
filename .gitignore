@@ -1,3 +1,4 @@
 node_modules/
 *.log
-temeplates/package-lock.json
+templates/package-lock.json
+templates/node_modules/
