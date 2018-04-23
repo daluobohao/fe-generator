@@ -4,24 +4,19 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const config = require('./webpack.config.common.js');
 const pkg = require('./package.json');
 
-const promisePath = 'core-js/fn/promise';
-const fetchPath = 'whatwg-fetch';
 const isHttps = process.env.PROTOCOL_ENV === 'https';
 const hmrPath = `${isHttps ? 'https' : 'http'}://localhost:${isHttps ? pkg.port.https : pkg.port.http}/__webpack_hmr`;
 const webpackHotClient = `webpack-hot-middleware/client?reload=true&quiet=true&path=${hmrPath}`;
 
 Object.keys(config.entry).forEach((key) => {
-  config.entry[key] = [promisePath, fetchPath, webpackHotClient].concat(config.entry[key]);
+  config.entry[key] = ['../polyfill.js', webpackHotClient].concat(config.entry[key]);
 });
+
+config.mode = 'development';
 
 config.devtool = 'source-map';
 
 config.plugins = [
-  new webpack.DefinePlugin({
-    'process.env': {
-      NODE_ENV: JSON.stringify('dev'),
-    },
-  }),
   new ExtractTextPlugin({
     filename: 'css/[name].[hash:8].css',
     allChunks: true,

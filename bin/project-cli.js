@@ -108,7 +108,6 @@ program
   .option('-F, --framework <framework>', 'add framework to project support (react) (defaults to pure js)')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('-f, --force', 'force on non-empty directory')
-  .option('    --no-ajax', 'no lib of ajax')
   .option('    --no-git', 'no .gitignore')
   .option('    --no-lint', 'no .eslintrc')
   .parse(process.argv);
@@ -274,18 +273,14 @@ function createApplication(name, filePath, params) {
       complete();
     });
     copyTemplate('project.config.js', `${filePath}/project.config.js`);
-    const commonConfig = loadTemplate('buildConfig/webpack.config.common.js');
-    const devConfig = loadTemplate('buildConfig/webpack.config.dev.js');
-    const config = loadTemplate('buildConfig/webpack.config.js');
-    commonConfig.locals.babelPresets = ['es2015'];
-    if (presetMap[program.framework]) {
-      commonConfig.locals.babelPresets = commonConfig.locals.babelPresets.concat(presetMap[program.framework]);
-    }
-    write(`${filePath}/webpack.config.common.js`, commonConfig.render());
-    write(`${filePath}/webpack.config.dev.js`, devConfig.render());
-    write(`${filePath}/webpack.config.js`, config.render());
-
-    // generate package.json
+    copyTemplate('postcss.config.js', `${filePath}/postcss.config.js`);
+    copyTemplate('.browserslistrc', `${filePath}/.browserslistrc`);
+    copyTemplate('polyfill.js', `${filePath}/polyfill.js`);
+    copyTemplate('webpack.config.common.js', `${filePath}/webpack.config.common.js`);
+    copyTemplate('webpack.config.dev.js', `${filePath}/webpack.config.dev.js`);
+    copyTemplate('webpack.config.js', `${filePath}/webpack.config.js`);
+    const babelrc = loadTemplate('rcConfig/babelrc');
+    // add framework dependecy and babelrc
     if (program.framework || params.framework) {
       const framework = program.framework || params.framework;
       const option = optionalPkg[framework] || { dependencies: {}, devDependencies: {} };
@@ -295,17 +290,16 @@ function createApplication(name, filePath, params) {
       Object.keys(option.devDependencies).forEach((key) => {
         basePkg.devDependencies[key] = option.devDependencies[key];
       });
+      babelrc.locals.babelPresets = [];
+      if (presetMap[framework]) {
+        babelrc.locals.babelPresets = babelrc.locals.babelPresets.concat(presetMap[framework]);
+      }
+      write(`${filePath}/.babelrc`, babelrc.render());
     }
     basePkg.host = {
       preview: program.preview || params.preview || '',
       online: program.online || params.online || '',
     };
-    if (program.ajax) {
-      const option = optionalPkg.ajax || { dependencies: {} };
-      Object.keys(option).forEach((key) => {
-        basePkg.dependencies[key] = option[key];
-      });
-    }
     if (program.git) {
       copyTemplate('gitignore', `${filePath}/.gitignore`);
       copyTemplate('README', `${filePath}/README.md`);
@@ -315,7 +309,7 @@ function createApplication(name, filePath, params) {
       Object.keys(option).forEach((key) => {
         basePkg.devDependencies[key] = option[key];
       });
-      copyTemplate('eslintrc', `${filePath}/.eslintrc`);
+      copyTemplate('.eslintrc', `${filePath}/.eslintrc`);
     }
     basePkg.name = name;
     basePkg.dependencies = sortedObject(basePkg.dependencies);

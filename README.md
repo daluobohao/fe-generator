@@ -46,4 +46,3 @@ This generator can also be further configured with the following command line fl
         --no-lint                add .eslintrc
     -f, --force                  force on non-empty directory
     -F, --framework <framework>  add framework to project support (react) (defaults to pure js)
-    -a, --ajax <ajax>            add ajax client to project support (superagent) (defaults to pure ajax

@@ -1,0 +1,14 @@
+{
+  "presets": [
+    [
+      "env", {
+        "target": {
+          "browser": ["last 2 versions", "> 1%"]
+        },
+        "useBuiltIns": true
+      }
+    ],
+    "react",
+    "stage-2"
+  ]
+}

@@ -1,16 +1,13 @@
 {
   "react": {
     "dependencies": {
-      "prop-types": "^15.5.10",
-      "react": "^15.6.1",
-      "react-dom": "^15.6.1"
+      "prop-types": "^15.6.1",
+      "react": "^16.3.2",
+      "react-dom": "^16.3.2"
     },
     "devDependencies": {
       "babel-preset-react": "^6.24.1"
     }
-  },
-  "ajax": {
-    "whatwg-fetch": "^2.0.3"
   },
   "lint": {
     "eslint": "^3.19.0",

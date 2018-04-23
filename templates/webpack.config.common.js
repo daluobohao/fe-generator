@@ -24,9 +24,6 @@ const config = {
       {
         test: /.jsx?/,
         loader: 'babel-loader',
-        options: {
-          presets: ['es2015'],
-        },
       },
     ],
   },
@@ -91,6 +88,9 @@ if (projectConfig.inlineCss.length > 0) {
       {
         loader: 'css-loader',
       },
+      {
+        loader: 'postcss-loader',
+      },
     ],
   });
 }
@@ -98,7 +98,7 @@ const cssRule = {
   test: /.css$/,
   use: ExtractTextPlugin.extract({
     fallback: 'style-loader',
-    use: 'css-loader',
+    use: ['css-loader', 'postcss-loader'],
   }),
 };
 if (cssExcludeArr.length > 0) {
