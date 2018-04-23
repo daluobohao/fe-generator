@@ -428,13 +428,14 @@ function getAbsenceParams(destinationPath, callback) {
 function main() {
   // Path
   const destinationPath = program.args.shift();
+  console.log("destinationPath: ", destinationPath);
 
   // App name
   // const appName = createAppName(path.resolve(destinationPath));
 
   // Generate application
   getAbsenceParams(destinationPath, (params) => {
-    const realPath = params.path || './hello-world';
+    const realPath = destinationPath || params.path || './hello-world';
     const appName = createAppName(path.resolve(realPath));
     emptyDirectory(realPath, (empty) => {
       if (empty || program.force) {
