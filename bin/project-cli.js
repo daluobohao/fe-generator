@@ -7,6 +7,7 @@ const path = require('path');
 const program = require('commander');
 const readline = require('readline');
 const sortedObject = require('sorted-object');
+const chalk = require('chalk')
 
 const MODE_0666 = 0o0666;
 const MODE_0755 = 0o0755;
@@ -20,31 +21,20 @@ const version = pkg.version;
 /* eslint no-console: 0, no-underscore-dangle: 0, prefer-rest-params: 0 */
 
 /**
- * Install an around function; AOP.
- */
-
-const around = (obj, method, fn) => {
-  const old = obj[method];
-  function newFunc() {
-    const args = new Array(arguments.length);
-    for (let i = 0; i < args.length; i += 1) args[i] = arguments[i];
-    return fn.call(this, old, args);
-  }
-  return newFunc;
-};
-
-/**
  * Install a before function; AOP.
  */
 
-const before = (obj, method, fn) => {
-  const old = obj[method];
-  function newFunc() {
-    fn.call(this);
-    old.apply(this, arguments);
+const enhanceErrorMessages = (methodName, log) => {
+  program.Command.prototype[methodName] = function (...args) {
+    if (methodName === 'unknownOption' && this._allowUnknownOption) {
+      return
+    }
+    this.outputHelp()
+    console.log(`  ` + chalk.red(log(...args)))
+    console.log()
+    process.exit(1)
   }
-  return newFunc;
-};
+}
 
 const oldExit = process.exit;
 /**
@@ -77,40 +67,37 @@ function exit(code) {
 // TODO: Switch to a different command framework
 process.exit = exit;
 
-// CLI
+enhanceErrorMessages('optionMissingArgument', (option, flag) => {
+  return `Missing required argument for option ${chalk.yellow(option.flags)}` + (
+    flag ? `, got ${chalk.yellow(flag)}` : ``
+  )
+})
+enhanceErrorMessages('unknownOption', optionName => {
+  return `Unknown option ${chalk.yellow(optionName)}.`
+})
+enhanceErrorMessages('missingArgument', argName => {
+  return `Missing required argument ${chalk.yellow(`<${argName}>`)}.`
+})
 
-program.optionMissingArgument = around(program, 'optionMissingArgument', function (fn, args) {
-  program.outputHelp();
-  fn.apply(this, args);
-  return { args: [], unknown: [] };
-});
-
-program.outputHelp = before(program, 'outputHelp', function () {
-  // track if help was shown for unknown option
-  this._helpShown = true;
-});
-
-program.unknownOption = before(program, 'unknownOption', function () {
-  // allow unknown options if help was shown, to prevent trailing error
-  this._allowUnknownOption = this._helpShown;
-
-  // show help if not yet shown
-  if (!this._helpShown) {
-    program.outputHelp();
-  }
-});
 
 program
   .version(version, '    --version')
-  .usage('[options] [dir]')
-  .option('-p, --preview <host>', 'preview host')
-  .option('-o, --online <host>', 'online host')
-  .option('-F, --framework <framework>', 'add framework to project support (react) (defaults to pure js)')
-  .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
-  .option('-f, --force', 'force on non-empty directory')
-  .option('    --no-git', 'no .gitignore')
-  .option('    --no-lint', 'no .eslintrc')
-  .parse(process.argv);
+  .usage('<command> [options]')
+
+program
+.command('create <app-name>')
+.description('创建一个新项目')
+.option('-p, --preview <host>', 'preview host')
+.option('-o, --online <host>', 'online host')
+.option('-F, --framework <framework>', 'add framework to project support (react) (defaults to pure js)')
+.option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
+.option('-f, --force', 'force on non-empty directory')
+.option('    --no-git', 'no .gitignore')
+.option('    --no-lint', 'no .eslintrc')
+// .action(() => {
+
+// })
+program.parse(process.argv);
 
 /**
  * Prompt for confirmation on STDOUT/STDIN
