@@ -20,10 +20,7 @@ const version = pkg.version;
 
 /* eslint no-console: 0, no-underscore-dangle: 0, prefer-rest-params: 0 */
 
-/**
- * Install a before function; AOP.
- */
-
+//
 const enhanceErrorMessages = (methodName, log) => {
   program.Command.prototype[methodName] = function (...args) {
     if (methodName === 'unknownOption' && this._allowUnknownOption) {
@@ -37,48 +34,6 @@ const enhanceErrorMessages = (methodName, log) => {
 }
 
 const oldExit = process.exit;
-/**
- * Graceful exit for async STDIO
- */
-
-function exit(code) {
-  let draining = 0;
-  // flush output for Node.js Windows pipe bug
-  // https://github.com/joyent/node/issues/6247 is just one bug example
-  // https://github.com/visionmedia/mocha/issues/333 has a good discussion
-  function done() {
-    if (!(draining)) oldExit(code);
-    draining -= 1;
-  }
-  const streams = [process.stdout, process.stderr];
-
-  exit.exited = true;
-
-  streams.forEach((stream) => {
-    // submit empty write request and wait for completion
-    draining += 1;
-    stream.write('', done);
-  });
-
-  done();
-}
-
-// Re-assign process.exit because of commander
-// TODO: Switch to a different command framework
-process.exit = exit;
-
-enhanceErrorMessages('optionMissingArgument', (option, flag) => {
-  return `Missing required argument for option ${chalk.yellow(option.flags)}` + (
-    flag ? `, got ${chalk.yellow(flag)}` : ``
-  )
-})
-enhanceErrorMessages('unknownOption', optionName => {
-  return `Unknown option ${chalk.yellow(optionName)}.`
-})
-enhanceErrorMessages('missingArgument', argName => {
-  return `Missing required argument ${chalk.yellow(`<${argName}>`)}.`
-})
-
 
 program
   .version(version, '    --version')
@@ -93,11 +48,41 @@ program
 .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
 .option('-f, --force', 'force on non-empty directory')
 .option('    --no-git', 'no .gitignore')
-.option('    --no-lint', 'no .eslintrc')
-// .action(() => {
+.option('    --no-lint', 'no .eslintrc');
 
-// })
+program
+.arguments('<command>')
+.action((cmd) => {
+  program.outputHelp()
+  console.log(`  ` + chalk.red(`Unknown command ${chalk.yellow(cmd)}.`))
+  console.log()
+});
+
+program.on('--help', () => {
+  console.log()
+  console.log(`  Run ${chalk.cyan(`vue <command> --help`)} for detailed usage of given command.`)
+  console.log()
+})
+
+program.commands.forEach(c => c.on('--help', () => console.log()))
+
+
+enhanceErrorMessages('optionMissingArgument', (option, flag) => {
+  return `Missing required argument for option ${chalk.yellow(option.flags)}` + (
+    flag ? `, got ${chalk.yellow(flag)}` : ``
+  )
+})
+enhanceErrorMessages('unknownOption', optionName => {
+  return `Unknown option ${chalk.yellow(optionName)}.`
+})
+enhanceErrorMessages('missingArgument', argName => {
+  return `Missing required argument ${chalk.yellow(`<${argName}>`)}.`
+})
+
 program.parse(process.argv);
+if (!process.argv.slice(2).length) {
+  program.outputHelp()
+}
 
 /**
  * Prompt for confirmation on STDOUT/STDIN
@@ -124,7 +109,7 @@ function confirm(msg, callback) {
 
 function write(filePath, str, mode) {
   fs.writeFileSync(filePath, str, { mode: mode || MODE_0666 });
-  console.log(`   \x1b[36mcreate\x1b[0m : ${path}`);
+  console.log(`   ${chalk.cyan('create')}${chalk.cyan(path)}`);
 }
 
 /**
@@ -155,7 +140,7 @@ function launchedFromCmd() {
 function mkdir(filePath, fn) {
   mkdirp(filePath, MODE_0755, (err) => {
     if (err) throw err;
-    console.log(`   \x1b[36mcreate\x1b[0m : ${filePath}`);
+    console.log(`   ${chalk.cyan('create')}${chalk.cyan(filePath)}`);
     if (typeof fn === 'function') {
       fn();
     }
@@ -415,6 +400,7 @@ function getAbsenceParams(destinationPath, callback) {
 function main() {
   // Path
   const destinationPath = program.args.shift();
+  console.log('destination', destinationPath)
   console.log("destinationPath: ", destinationPath);
 
   // App name
@@ -435,7 +421,7 @@ function main() {
             createApplication(appName, realPath, params);
           } else {
             console.error('aborting');
-            exit(1);
+            process.exit(1);
           }
         });
       }
@@ -443,7 +429,7 @@ function main() {
   });
 }
 
-if (!exit.exited) {
+if (!process.exit.exited) {
   main();
 }
 
