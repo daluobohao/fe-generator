@@ -6,6 +6,15 @@ const chalk = require('chalk')
 const validateProjectName = require('validate-npm-package-name')
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
+const program = require('commander');
+const readline = require('readline');
+const mkdirp = require('mkdirp');
+const sortedObject = require('sorted-object');
+const ejs = require('ejs');
+
+
+const MODE_0666 = 0o0666;
+const MODE_0755 = 0o0755;
 
 async function create(projectName, options) {
 
@@ -60,27 +69,14 @@ async function create(projectName, options) {
         await fs.remove(targetDir)
       }
     }
+    // const creator = new creator(name, targetDir)
+    // await creator.create(options);
+
   }
 
   // Generate application
   getAbsenceParams(targetDir, (params) => {
-    const appName = createAppName(targetDir);
-    emptyDirectory(realPath, (empty) => {
-      if (empty || program.force) {
-        process.stdin.destroy();
-        createApplication(appName, realPath, params);
-      } else {
-        confirm('目标目录不为空，命令将会覆盖并合并原有内容，是否继续？\ndestination is not empty, cli will rewrite and merge destination, continue? [y/N] ', (ok) => {
-          if (ok) {
-            process.stdin.destroy();
-            createApplication(appName, realPath, params);
-          } else {
-            console.error('aborting');
-            process.exit(1);
-          }
-        });
-      }
-    });
+    createApplication(name, targetDir, params);
   });
 }
 
@@ -290,34 +286,11 @@ function createApplication(name, filePath, params) {
     basePkg.dependencies = sortedObject(basePkg.dependencies);
     basePkg.devDependencies = sortedObject(basePkg.devDependencies);
     write(`${filePath}/package.json`, `${JSON.stringify(basePkg, null, 2)}\n`);
-
-    // copy dir and file for xbox
-    mkdir(`${filePath}/deploy`, () => {
-      mkdir(`${filePath}/deploy/manifests`, () => {
-        copyTemplate('deploy/manifests/config.pp.template', `${filePath}/deploy/manifests/config.pp.template`);
-        complete();
-      });
-      copyTemplate('deploy/find_cluster.py', `${filePath}/deploy/find_cluster.py`);
-      complete();
-    });
     const buildSh = loadTemplate('build.sh');
     buildSh.locals.name = name;
     write(`${filePath}/build.sh`, buildSh.render());
     complete();
   });
-}
-
-/**
- * Create an app name from a directory path, fitting npm naming requirements.
- *
- * @param {String} pathName
- */
-
-function createAppName(pathName) {
-  return path.basename(pathName)
-    .replace(/[^A-Za-z0-9.()!~*'-]+/g, '-')
-    .replace(/^[-_.]+|-+$/g, '')
-    .toLowerCase();
 }
 
 /**
@@ -366,7 +339,6 @@ const checkParams = (destinationPath) => {
 
 function getAbsenceParams(destinationPath, callback) {
   const tips = checkParams(destinationPath);
-  console.l
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,

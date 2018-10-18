@@ -1,19 +1,11 @@
 #!/usr/bin/env node
 
-const ejs = require('ejs');
 const fs = require('fs');
-const mkdirp = require('mkdirp');
 const path = require('path');
 const program = require('commander');
-const readline = require('readline');
-const sortedObject = require('sorted-object');
 const chalk = require('chalk')
 
-const MODE_0666 = 0o0666;
-const MODE_0755 = 0o0755;
-
 const pkg = require('../package.json');
-
 
 const version = pkg.version;
 

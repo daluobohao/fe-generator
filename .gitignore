@@ -2,3 +2,4 @@ node_modules/
 *.log
 templates/package-lock.json
 templates/node_modules/
+test/
