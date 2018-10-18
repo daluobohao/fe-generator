@@ -1,17 +1,4 @@
 #!/bin/sh
 
-set -e
-set -x
-
-JOB_ENV=$1
-CLUSTER=`python ./deploy/find_cluster.py ${JOB_ENV}`
-echo $CLUSTER
-
-SCRIPT_DIR=`cd $(dirname $0); pwd -P`
-cd $SCRIPT_DIR
-
-mkdir -p release/base/<%- name %>
-cp -r dist/* release/base/<%- name %>
-cp -r deploy/ release/
-
-
+npm install --registry=http://registry.npm.pt.mi.com/
+npm run goku
