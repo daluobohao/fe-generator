@@ -1,5 +1,5 @@
 {
-  "name": "telecom-fe-project",
+  "name": "fe-project",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -54,8 +54,7 @@
     "web": "concurrently \"npm run start-dev-server\" \"npm run start-api-server\" -k",
     "proxy": "anyProxy -p 8001 -w 8002 -s --ignore-unauthorized-ssl -r ./server/proxy-server.js",
     "dev": "concurrently \"npm run start-dev-server\" \"npm run start-api-server\" \"npm run proxy\" -k",
-    "https_dev": "cross-env PROTOCOL_ENV=https npm run dev",
-    "goku": "goku xbox --build-command 'npm run build' --build-output dist --archive-git-url "
+    "https_dev": "cross-env PROTOCOL_ENV=https npm run dev"
   },
   "port": {
     "http": 8080,
@@ -66,6 +65,6 @@
     "preview": "",
     "online": ""
   },
-  "author": "chenxin",
-  "license": "ISC"
+  "author": "wanghao",
+  "license": "MIT"
 }

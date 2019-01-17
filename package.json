@@ -1,5 +1,5 @@
 {
-  "name": "@mi/telecom-fe-generator",
+  "name": "fe-generator",
   "version": "0.10.1",
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
     "express",
     "webpack"
   ],
-  "author": "telecom-fe",
+  "author": "wanghao",
   "license": "MIT",
   "dependencies": {
     "chalk": "^2.4.1",

@@ -1,10 +1,9 @@
 {
-  "name": "telecom-fe-project",
+  "name": "fe-project",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "@mi/ga-func": "^1.0.3",
     "@mi/telecom-fetch": "^1.0.2",
     "babel-polyfill": "^6.26.0",
     "body-parser": "^1.17.2",
@@ -55,6 +54,6 @@
     "preview": "",
     "online": ""
   },
-  "author": "chenxin5 yangkun5",
-  "license": "ISC"
+  "author": "wanghao",
+  "license": "MIT"
 }
