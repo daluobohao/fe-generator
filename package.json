@@ -1,11 +1,11 @@
 {
   "name": "fe-generator",
-  "version": "0.10.1",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
-    "url": "git@git.n.xiaomi.com:xiaomi-telecom-fe/telecom-fe-generator.git"
+    "url": "git@github.com:daluobohao/fe-generator.git"
   },
-  "description": "project generator of telecom fe group",
+  "description": "project generator of fe",
   "bin": {
     "telecom-fe-generator": "bin/project-cli.js"
   },
